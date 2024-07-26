@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from "react-native";
 
 export default function RegistrationScreen({ navigation }) {
@@ -12,11 +13,51 @@ export default function RegistrationScreen({ navigation }) {
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validateEmail = (email) => {
+    const regex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+    return regex.test(email);
+  };
+
+  const validatePhone = (phone) => {
+    const regex = /^\+?[1-9]\d{1,14}$/; // E.164 format
+    return regex.test(phone);
+  };
+
+  const validateName = (name) => {
+    const regex = /^[а-яА-ЯёЁa-zA-Z\s]+$/;
+    return regex.test(name);
+  };
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!isPasswordVisible);
+  };
+
+  const handleRegister = () => {
+    let newErrors = {};
+    if (!validateEmail(email)) {
+      newErrors.email = "Некорректный email";
+    }
+    if (!validatePhone(phone)) {
+      newErrors.phone = "Некорректный телефон";
+    }
+    if (!validateName(name)) {
+      newErrors.name = "ФИО должно содержать только буквы";
+    }
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      // Proceed with registration
+      alert("Регистрация успешна");
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Регистрация</Text>
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, errors.email && styles.errorBorder]}>
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -24,7 +65,8 @@ export default function RegistrationScreen({ navigation }) {
           onChangeText={setEmail}
         />
       </View>
-      <View style={styles.inputContainer}>
+      {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+      <View style={[styles.inputContainer, errors.phone && styles.errorBorder]}>
         <TextInput
           style={styles.input}
           placeholder="Телефон"
@@ -32,7 +74,8 @@ export default function RegistrationScreen({ navigation }) {
           onChangeText={setPhone}
         />
       </View>
-      <View style={styles.inputContainer}>
+      {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
+      <View style={[styles.inputContainer, errors.name && styles.errorBorder]}>
         <TextInput
           style={styles.input}
           placeholder="ФИО"
@@ -40,16 +83,27 @@ export default function RegistrationScreen({ navigation }) {
           onChangeText={setName}
         />
       </View>
+      {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
           placeholder="Пароль"
-          secureTextEntry={true}
+          secureTextEntry={!isPasswordVisible}
           value={password}
           onChangeText={setPassword}
         />
+        <TouchableOpacity onPress={togglePasswordVisibility}>
+          <Image
+            style={styles.icon2}
+            source={
+              isPasswordVisible
+                ? require("../../assets/images/Eye.png")
+                : require("../../assets/images/Eye_close.png")
+            }
+          />
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Зарегистрироваться</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -63,7 +117,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    padding: 20,
+    padding: 30,
+    paddingTop: "30%",
+    paddingBottom: "30%",
     backgroundColor: "#fff",
   },
   title: {
@@ -73,26 +129,47 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: "100%",
-    marginBottom: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 15,
+    padding: 10,
+    marginBottom: 20,
+    paddingHorizontal: 15,
   },
   input: {
+    flex: 1,
     height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
+  },
+  icon2: {
+    width: 24,
+    height: 24,
   },
   button: {
-    backgroundColor: "#ccc",
-    padding: 10,
-    borderRadius: 5,
+    backgroundColor: "#141317",
+    padding: 25,
+    borderRadius: 15,
+    width: "100%",
+    textAlign: "center",
+    marginTop: 15,
   },
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+    textAlign: "center",
   },
   link: {
     marginTop: 15,
     color: "#007BFF",
+  },
+  errorText: {
+    color: "red",
+    alignSelf: "flex-start",
+    marginLeft: 15,
+    marginBottom: 10,
+  },
+  errorBorder: {
+    borderColor: "red",
   },
 });

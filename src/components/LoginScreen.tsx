@@ -1,5 +1,4 @@
-import React from "react";
-
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +7,14 @@ import {
   StyleSheet,
   Image,
 } from "react-native";
+
 export default function LoginScreen({ navigation }) {
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!isPasswordVisible);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
@@ -33,12 +39,18 @@ export default function LoginScreen({ navigation }) {
         <TextInput
           style={styles.input}
           placeholder="Введите пароль"
-          secureTextEntry={true}
+          secureTextEntry={!isPasswordVisible}
         />
-        <Image
-          style={styles.icon}
-          source={require("../../assets/images/Eye.png")}
-        />
+        <TouchableOpacity onPress={togglePasswordVisibility}>
+          <Image
+            style={styles.icon2}
+            source={
+              isPasswordVisible
+                ? require("../../assets/images/Eye_close.png")
+                : require("../../assets/images/Eye.png")
+            }
+          />
+        </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Войти</Text>
@@ -96,7 +108,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   icon: {
-    marginRight: 10,
+    width: 20,
+    height: 20,
+  },
+  icon2: {
+    width: 24,
+    height: 24,
   },
   input: {
     flex: 1,
