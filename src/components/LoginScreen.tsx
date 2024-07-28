@@ -9,10 +9,16 @@ import {
 } from "react-native";
 
 export default function LoginScreen({ navigation }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!isPasswordVisible);
+  const handleLogin = () => {
+    if (username === "admin" && password === "admin") {
+      navigation.navigate("Profile");
+    } else {
+      alert("Неверный логин или пароль");
+    }
   };
 
   return (
@@ -29,7 +35,12 @@ export default function LoginScreen({ navigation }) {
         Для входа в приложение, пожалуйста, авторизуйтесь
       </Text>
       <View style={styles.inputContainer}>
-        <TextInput style={styles.input} placeholder="Имя пользователя" />
+        <TextInput
+          style={styles.input}
+          placeholder="Имя пользователя"
+          value={username}
+          onChangeText={setUsername}
+        />
         <Image
           style={styles.icon}
           source={require("../../assets/images/Profile.png")}
@@ -40,8 +51,12 @@ export default function LoginScreen({ navigation }) {
           style={styles.input}
           placeholder="Введите пароль"
           secureTextEntry={!isPasswordVisible}
+          value={password}
+          onChangeText={setPassword}
         />
-        <TouchableOpacity onPress={togglePasswordVisibility}>
+        <TouchableOpacity
+          onPress={() => setPasswordVisible(!isPasswordVisible)}
+        >
           <Image
             style={styles.icon2}
             source={
@@ -52,7 +67,7 @@ export default function LoginScreen({ navigation }) {
           />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Войти</Text>
       </TouchableOpacity>
       <View style={styles.linkReg}>
